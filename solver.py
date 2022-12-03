@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.colors as colors
 from skimage import io
 import matplotlib.animation as animation
 
@@ -11,7 +10,7 @@ LASER_MAX_RANGE = 1200//4 # (in pixels)
 PIXEL_WIDTH = 4
 PIXEL_HIGHT = 4
 MAP_SIZE = (400, 680) # where the first dimension if for the y-axis and the second dimension (in pixels)
-def getMap():
+def getInitialMap():
     # Read Map.jpg using skimage
     map = io.imread('Map.jpg')
     # Convert to grayscale
@@ -24,6 +23,7 @@ def getMap():
 def getInitialRobotPose():
     robotPose = np.array([10, 180, 0]) # x-coordinates, y-coordinates, angle with the x-axis in degree
     return robotPose
+
 def drawRobot(map, robotPose):
     mapY, mapX, _ = robotPose
     if (mapX >= 0 and mapX < map.shape[0] and mapY >= 0 and mapY < map.shape[1]):
@@ -49,6 +49,7 @@ def drawLaserLines(map, robotPose):
                 else:
                     map[mapX, mapY] = 100  # color the laser 
     return map
+
 def getFigure():
     fig, ax = plt.subplots(figsize=(8, 5))
     ax.clear()  # Clears the figure to update the line, point, title, and axes
@@ -56,33 +57,34 @@ def getFigure():
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     return fig, ax
+
 def showStaticMap():
     robotPose = getInitialRobotPose()
-    map = drawRobot(drawLaserLines(getMap(), robotPose), robotPose)
+    map = drawRobot(drawLaserLines(getInitialMap(), robotPose), robotPose)
     fig, ax = getFigure()
     # Plot the robot
     plt.scatter(robotPose[0], robotPose[1], color='r')
     ax.set_title("Robot Pose: (%2d, %2d, %2d)" % (robotPose[0], robotPose[1], robotPose[2]))
     plt.imshow(map)
     plt.show()
-def showAnimatedMap():
+def showAnimatedMap(robotPose):
     def animate(i):
-        robotPose = getInitialRobotPose()
-        robotPose[0] += i
-        map = drawRobot(drawLaserLines(getMap(), robotPose), robotPose)
+        newRobotPose = robotPose.copy()
+        newRobotPose[0] += i
+        map = drawRobot(drawLaserLines(getInitialMap(), newRobotPose), newRobotPose)
         # map = drawRobot(map, robotPose)
         ax.clear() 
-        plt.scatter(robotPose[0], robotPose[1], color='r')
-        ax.set_title("Robot Pose: (%2d, %2d, %2d)" % (robotPose[0], robotPose[1], robotPose[2]))
+        plt.scatter(newRobotPose[0], newRobotPose[1], color='r')
+        ax.set_title("Robot Pose: (%2d, %2d, %2d)" % (newRobotPose[0], newRobotPose[1], newRobotPose[2]))
         plt.imshow(map)
     # initialize the figure
     fig, ax = getFigure()
     # animation
-    anim = animation.FuncAnimation(fig, animate, init_func=getMap,
+    anim = animation.FuncAnimation(fig, animate, init_func=getInitialMap,
                                frames=MAP_SIZE[1], interval=1, blit=True,)
     plt.show()
-    # anim.save('map.gif', dpi=80, writer='pillow')
+    anim.save('map.gif', dpi=80, writer='pillow')
 
 if __name__ == '__main__':    
     showStaticMap()
-    showAnimatedMap()                
+    showAnimatedMap(getInitialRobotPose())               
