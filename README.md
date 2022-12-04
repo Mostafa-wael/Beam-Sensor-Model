@@ -5,7 +5,8 @@ This is a quick and simple implementation of a beam sensor model. The beam senso
 **Static**
 ![Beam Sensor Model](results/Figure_1.png)
 **Dynamic**
-![Beam Sensor Model](results/BeamModel.gif)
+
+https://user-images.githubusercontent.com/56788883/205514430-a6efdb5c-16e9-4c3a-b4c8-913ad375c849.mp4
 
 >> to get these results, run the following command:
 >> ```bash
