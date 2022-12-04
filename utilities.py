@@ -104,7 +104,7 @@ def showAnimatedMap(robotPose):
                                frames=MAP_SIZE[1], interval=1, blit=True,)
     plt.show()
     print("Saving the animation")
-    # anim.save('map.gif', dpi=80, writer='pillow')
+    # anim.save('map.gif', dpi=80, writer='pillow', fps=20)
     print("Done")
 #######################################################
 # Get rays from pose
@@ -146,7 +146,7 @@ def getEndPointProbability(likelihood, rays, pointX, pointY, theta):
 
 def getLikelihood(likelihood, rays):
     map =  np.zeros(likelihood.shape)
-    for x in tqdm(range(0, likelihood.shape[0]//10, 2), desc="Calculating Likelihood"):
+    for x in range(0, likelihood.shape[0]//10, 2):
         for y in range(0, likelihood.shape[1]//10,2):
             for theta in range(0, 360, 35):
                 map[x, y] = max(getEndPointProbability(likelihood, rays, x, y, theta), map[x, y])
@@ -156,7 +156,6 @@ import multiprocessing as mp
 def getLikelihoodParallel(likelihood, rays):
     pool = mp.Pool(mp.cpu_count())
     map =  np.zeros(likelihood.shape)
-    print ("getLikelihood")
     for x in tqdm(range(0, likelihood.shape[0]//10, 2), desc="Calculating Likelihood"):
         for y in range(0, likelihood.shape[1]//10,2):
             for theta in range(0, 360, 35):
