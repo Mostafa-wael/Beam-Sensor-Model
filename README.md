@@ -18,4 +18,6 @@ This is a quick and simple implementation of a beam sensor model. The beam senso
 **More clear images after applying erosion and dilation**
 ![pose estimation](results/outputDilated.png)
 ![pose estimation](results/outputEroted.png)
+**Final likelihood with the map**
+![pose estimation](results/outputTotalWithDilation.png)
 

@@ -1,6 +1,7 @@
 # Imports
 import numpy as np
 from skimage import io
+from skimage.color import rgb2gray
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from tqdm import tqdm
@@ -27,13 +28,11 @@ def getColoredInitialMap():
 def getBinaryInitialMap():
     # Read Map.jpg using skimage
     map = io.imread('Map.jpg')
-    # Convert to grayscale
-    map = np.mean(map, axis=2)
-    # Convert to binary
-    map = map < 128
-    # convert it to zeros and ones
-    map = map * 1
-    return map
+    # Convert to grayscale using sklearn
+    map = rgb2gray(map)
+    # convert zeros to 0.1 to avoid division by zero
+    map[map == 0] = 0.1
+    return 1 - map
 def getInitialRobotPose():
     robotPose = np.array([10, 180, 0]) # x-coordinates, y-coordinates, angle with the x-axis in degree
     return robotPose
@@ -133,23 +132,37 @@ def getRays(map, robotPose):
 # Likelihood Field
 def getEndPointProbability(likelihood, rays, pointX, pointY, theta):
     probability = 1 # initialize the probability
-    for rayIdx, theta in enumerate(range(-125, 125, 2)):  
+    for rayIdx, angle in enumerate(range(theta-125, theta+125, 2)):  
         # update the laser end point
-        mapY = int(pointX + rays[rayIdx] * np.cos(theta * np.pi / 180))
-        mapX = int(pointY + rays[rayIdx] * np.sin(theta * np.pi / 180))
+        mapY = int(pointX + rays[rayIdx] * np.cos(angle * np.pi / 180))
+        mapX = int(pointY + rays[rayIdx] * np.sin(angle * np.pi / 180))
         # if the laser is inside the map
         if (mapX >= 0 and mapX < likelihood.shape[0] and mapY >= 0 and mapY < likelihood.shape[1]):
                 probability*= likelihood[mapX, mapY]
         else: # if the laser is outside the map
-            probability=0.1      
+            probability*=0.1      
     return probability
-                
-def getLikelihood(map, rays):
-    for x in tqdm(range(0, map.shape[0], 2), desc="Calculating Likelihood"):
-        for y in range(0, map.shape[1],2):
-            for theta in range(0, 360, 5):
-                map[x, y] = max(getEndPointProbability(map, rays, x, y, theta), map[x, y])
-    map = map/np.max(map) # normalize the likelihood
+
+
+def getLikelihood(likelihood, rays):
+    map =  np.zeros(likelihood.shape)
+    for x in tqdm(range(0, likelihood.shape[0]//10, 2), desc="Calculating Likelihood"):
+        for y in range(0, likelihood.shape[1]//10,2):
+            for theta in range(0, 360, 35):
+                map[x, y] = max(getEndPointProbability(likelihood, rays, x, y, theta), map[x, y])
     return map
+# make the getLikelihood function runs in parallel
+import multiprocessing as mp
+def getLikelihoodParallel(likelihood, rays):
+    pool = mp.Pool(mp.cpu_count())
+    map =  np.zeros(likelihood.shape)
+    print ("getLikelihood")
+    for x in tqdm(range(0, likelihood.shape[0]//10, 2), desc="Calculating Likelihood"):
+        for y in range(0, likelihood.shape[1]//10,2):
+            for theta in range(0, 360, 35):
+                map[x, y] = max(pool.apply(getEndPointProbability, args=(likelihood, rays, x, y, theta)), map[x, y])
+    pool.close()
+    return map
+
 #######################################################
 #######################################################
