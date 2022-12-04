@@ -5,7 +5,7 @@ This is a quick and simple implementation of a beam sensor model. The beam senso
 **Static**
 ![Beam Sensor Model](results/Figure_1.png)
 **Dynamic**
-![Beam Sensor Model](results/map.gif)
+![Beam Sensor Model](results/BeamModel.mp4)
 >> to get these results, run the following command:
 >> ```bash
 >> python3 beam_sensor_model.py
