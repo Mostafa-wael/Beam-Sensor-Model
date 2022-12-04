@@ -5,7 +5,7 @@ This is a quick and simple implementation of a beam sensor model. The beam senso
 ## Part 1: Beam Readings for a certain pose
 ### Static
 
-![Beam Sensor Model](results/Figure_1.png)
+![Beam Sensor Model](Output/req1.png)
 
 ### Dynamic
 
@@ -16,19 +16,19 @@ https://user-images.githubusercontent.com/56788883/205514430-a6efdb5c-16e9-4c3a-
 
 ### Robots pose = (20, 20, 0)
 
-![pose estimation](results/output.png)
+![pose estimation](Output/output.png)
 
 ### More clear images after applying erosion and dilation
 
-![pose estimation](results/outputDilated.png)
+![pose estimation](Output/outputDilated.png)
 
-![pose estimation](results/outputEroted.png)
+![pose estimation](Output/outputEroted.png)
 
 ### Final likelihood with the map
 
-![pose estimation](results/outputTotalWithDilation.png)
+![pose estimation](Output/outputTotalWithDilation.png)
 
 
 ### For the pose estimation, a multi-threaded code was used
-![cpu usage](results/CPU.png)
+![cpu usage](Output/CPU.png)
 
